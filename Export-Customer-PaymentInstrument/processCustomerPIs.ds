@@ -1,0 +1,47 @@
+/**
+ * This function process profiles and decrypts customer's saved PaymentInstrument
+ */
+function execute( args : PipelineDictionary ) : Number
+{
+	try
+	{
+		require('dw/customer/CustomerMgr').processProfiles( processCustomerPIs , 'email = {0}', 'test@email.com' );
+	}
+	catch( e )
+	{
+		const message = e.message;
+		dw.system.Logger.error(e.message);
+		return PIPELET_ERROR;
+	}
+
+	return PIPELET_NEXT;
+}
+
+
+function processCustomerPIs( profile )
+{
+
+	let wallet = profile.wallet;
+
+	let customerPIs = wallet.getPaymentInstruments( dw.order.PaymentInstrument.METHOD_CREDIT_CARD );
+	let len = customerPIs.length;
+
+	const CertificateRef = require('dw/crypto/CertificateRef');
+	const KeyRef = require('dw/crypto/KeyRef');
+	const Cipher = require('dw/crypto/Cipher');
+	const certRef = new CertificateRef("server");
+	const keyRef = new KeyRef("private");
+
+
+	while ( len -- )
+	{
+		let pi = customerPIs[len];
+		let isPermMasked = pi.isPermanentlyMasked();
+		let creditCardNumber = pi.getEncryptedCreditCardNumber( dw.order.PaymentInstrument.ENCRYPTION_ALGORITHM_RSA, certRef);
+
+		let cipher = new Cipher();
+
+		let decCC = cipher.decrypt(creditCardNumber, keyRef, dw.order.PaymentInstrument.ENCRYPTION_ALGORITHM_RSA, null, 0);
+	}
+
+}
