@@ -14,7 +14,7 @@ I wanted to check if the steps mention in KB article work or not. So, in order t
 
 In order to change that go to `Merchant Tools >  Site Preferences >  Order` and look for `Payment Information Retention`
 
-![Order Preferences](/images/BM.png)
+![Order Preferences](/Export-Customer-PaymentInstrument/images/BM.png)
 
 Enter an arbitrary value in it like `2`
 
